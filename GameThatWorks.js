@@ -3,7 +3,7 @@ const canvasWidth = 500;
 const canvasHeight = 500;
 const movementSpeed = 5;
 var Player;
-var score = 0;
+var score;
 var coin;
 const COINSIZE = 10;
 const COIN_TIMEOUT = 2000;
@@ -12,6 +12,7 @@ const PLAYERSIZE = 20;
 // setup()
 /*******************************************************/
 function setup() {
+    score = 0;
 	console.log("setup: ");
 	cnv = new Canvas(canvasWidth, canvasHeight);
 	Player = new Sprite(100, 100, PLAYERSIZE, PLAYERSIZE, 'd');
@@ -19,7 +20,6 @@ function setup() {
     Player.rotationSpeed = 0;
     coinGroup = new Group();
     createCoin ();
-	coinGroup.collides(Player, playerHitCoin);
 }
 
 /*******************************************************/
@@ -29,7 +29,9 @@ function draw() {
 	background('gray'); 
     movePlayer ();
     checkCoinTime();
+    coinGroup.collides(Player, playerHitCoin);
     displayScore ();
+    
 
 	
 }
@@ -58,7 +60,7 @@ function playerHitCoin(coin, Player) {
     coin.remove();
     Player.rotationSpeed = 0;
     Player.rotation = 0;
-    
+    Score = score + 1;
     }	
 
 function movePlayer () {
