@@ -3,8 +3,9 @@ const canvasWidth = 500;
 const canvasHeight = 500;
 const movementSpeed = 5;
 var Player;
-var score;
 var coin;
+var gameState = "play";
+var score = 0;
 const COINSIZE = 10;
 const COIN_TIMEOUT = 2000;
 const PLAYERSIZE = 20;
@@ -25,15 +26,47 @@ function setup() {
 /*******************************************************/
 // draw()
 /*******************************************************/
+
 function draw() {
-	background('gray'); 
+    if (gameState == "play") {
+        runGame();
+    }
+    else if (gameState == "lose") {
+        loseGame();
+    }
+		
+}
+function runGame() {
+    background('gray'); 
+    if (random(0,500)<5) {
+        coinGroup.add(createCoin());
+    }
     movePlayer ();
+    for (var i = 0; i < coinGroup.length; i++) {
+    console.log(coinGroup.length)
+    if(checkCoinTime(coinGroup[i])) {
+        coinGroup[i].remove();
+        gameState = "lose";
+    }
+    }
     checkCoinTime();
     coinGroup.collides(Player, playerHitCoin);
     displayScore ();
-    
-
-	
+   
+}
+function loseGame() {
+ background('red');
+ Player.remove();
+ coinGroup.remove();
+ console.log("Help");
+}
+function createCoin () {
+    coin = new Sprite(random (0, canvasHeight), random (0, canvasHeight), COINSIZE, 'd');
+    coin.color = 'yellow';
+    //coinGroup.add(coin);
+    coin.spawntime = millis ();
+    return(coin);
+  
 }
 function displayScore () {
     textSize(30);
@@ -41,26 +74,19 @@ function displayScore () {
 }
 function checkCoinTime () {
     //check if the coin has been around too long (COIN_TIMEOUT milliseconds)
-    if (coin.spawntime + COIN_TIMEOUT < millis()){
-        coin.remove()
-    }
+   if (coin.spawntime + COIN_TIMEOUT < millis()){
+  coin.remove()
+   }
 }
-function createCoin () {
-    for (i = 0; i < 10; i++) {
-		coin = new Sprite(random (0, canvasHeight), random (0, canvasHeight), COINSIZE, 'd');
-	    coin.color = 'yellow';
-		coinGroup.add(coin);
-        coin.spawntime = millis ();
-	  }
-      
-}
-function playerHitCoin(coin, Player) {
 
+function playerHitCoin(coin, Player) {
     // Delete the alien which was hit
     coin.remove();
+    score++
+   
     Player.rotationSpeed = 0;
     Player.rotation = 0;
-    Score = score + 1;
+   
     }	
 
 function movePlayer () {
