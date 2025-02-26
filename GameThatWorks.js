@@ -13,14 +13,23 @@ const PLAYERSIZE = 20;
 // setup()
 /*******************************************************/
 function setup() {
-    score = 0;
-	console.log("setup: ");
 	cnv = new Canvas(canvasWidth, canvasHeight);
 	Player = new Sprite(100, 100, PLAYERSIZE, PLAYERSIZE, 'd');
 	Player.color = 'orange';
     Player.rotationSpeed = 0;
     coinGroup = new Group();
-    createCoin ();
+    coinGroup.add(createCoin());
+
+    coinGroup.collides(Player, playerHitCoin);
+    function playerHitCoin(coin, Player) {
+        // Delete the alien which was hit
+        coin.remove();
+        score++
+        Player.rotationSpeed = 0;
+        Player.rotation = 0;
+       
+    }	
+
 }
 
 /*******************************************************/
@@ -37,34 +46,39 @@ function draw() {
 		
 }
 function runGame() {
-    background('gray'); 
+    background('gray');
     if (random(0,500)<5) {
         coinGroup.add(createCoin());
     }
     movePlayer ();
     for (var i = 0; i < coinGroup.length; i++) {
-    console.log(coinGroup.length)
+        // Check Coin time should return true if the coin is old and needs to be deleted
     if(checkCoinTime(coinGroup[i])) {
         coinGroup[i].remove();
         gameState = "lose";
+        console.log (gameState);
+        }
     }
-    }
-    checkCoinTime();
-    coinGroup.collides(Player, playerHitCoin);
+    
     displayScore ();
    
 }
 function loseGame() {
- background('red');
- Player.remove();
- coinGroup.remove();
- console.log("Help");
+    background('red');
+	Player.remove();
+	coinGroup.remove();
+	fill(0, 0, 0);
+	textSize(50);
+	text("You missed a coin! ", 10,100);
+	textSize(100);
+
+	text("Score: " + score, 10,200);
 }
 function createCoin () {
     coin = new Sprite(random (0, canvasHeight), random (0, canvasHeight), COINSIZE, 'd');
     coin.color = 'yellow';
     //coinGroup.add(coin);
-    coin.spawntime = millis ();
+    coin.spawntime = millis();
     return(coin);
   
 }
@@ -72,22 +86,14 @@ function displayScore () {
     textSize(30);
     text("Score: "+ score, 0, 25);
 }
-function checkCoinTime () {
+function checkCoinTime (_coin) {
     //check if the coin has been around too long (COIN_TIMEOUT milliseconds)
-   if (coin.spawntime + COIN_TIMEOUT < millis()){
-  coin.remove()
-   }
+    if (_coin.spawntime + COIN_TIMEOUT < millis()){
+        return(true);// Coin is old
+    }
+	return(false);//Coin is young
 }
 
-function playerHitCoin(coin, Player) {
-    // Delete the alien which was hit
-    coin.remove();
-    score++
-   
-    Player.rotationSpeed = 0;
-    Player.rotation = 0;
-   
-    }	
 
 function movePlayer () {
 	if (kb.pressing('a')) {
