@@ -7,13 +7,19 @@ var coin;
 var gameState = "play";
 var score = 0;
 const COINSIZE = 10;
-const COIN_TIMEOUT = 2000;
+const COIN_TIMEOUT = 5000;
 const PLAYERSIZE = 20;
+
+let sheetImg;
+function preload() {
+	sheetImg = loadImage("../assets/images/coin.png");
+    imgBG   = loadImage('../assets/images/Background.png');
+}
 /*******************************************************/
 // setup()
 /*******************************************************/
 function setup() {
-	cnv = new Canvas(canvasWidth, canvasHeight);
+	cnv = new Canvas(canvasWidth, canvasHeight, "Pixelated x4");
 	Player = new Sprite(100, 100, PLAYERSIZE, PLAYERSIZE, 'd');
 	Player.color = 'orange';
     Player.rotationSpeed = 0;
@@ -46,8 +52,8 @@ function draw() {
 		
 }
 function runGame() {
-    background('gray');
-    if (random(0,500)<5) {
+    background(imgBG);
+    if (random(0,500)<7) {
         coinGroup.add(createCoin());
     }
     movePlayer ();
@@ -77,6 +83,8 @@ function loseGame() {
 function createCoin () {
     coin = new Sprite(random (0, canvasHeight), random (0, canvasHeight), COINSIZE, 'd');
     coin.color = 'yellow';
+    coin.image = (sheetImg);
+    //coin.addAni({w:16, h:16, row:1, col:1});
     //coinGroup.add(coin);
     coin.spawntime = millis();
     return(coin);
